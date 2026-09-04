@@ -4,51 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0a0a0f">
-    <meta name="description" content="Ghost IA - Editor de código GitHub">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Ghost IA">
+    <title>Ghost IA</title>
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="icon" type="image/png" href="/icon.png">
-    <link rel="apple-touch-icon" href="/icon.png">
-    <title>Ghost IA</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0a0f;
             color: white;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
             overflow-x: hidden;
+            min-height: 100vh;
         }
-        button { cursor: pointer; }
-        input, textarea { outline: none; }
 
-        /* Animated background particles */
-        .bg-animation {
+        /* Grid background */
+        .grid-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
             z-index: 0;
-            overflow: hidden;
+            animation: gridMove 20s linear infinite;
         }
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            background: #8b5cf6;
-            animation: float linear infinite;
-            opacity: 0.3;
-        }
-        @keyframes float {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            20% { opacity: 0.3; }
-            100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
         }
 
+        /* Glow orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 1;
+            pointer-events: none;
+            animation: orbFloat 10s ease-in-out infinite;
+        }
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: rgba(139, 92, 246, 0.3);
+            top: -100px;
+            left: -100px;
+        }
+        .orb-2 {
+            width: 250px;
+            height: 250px;
+            background: rgba(124, 58, 237, 0.2);
+            bottom: -50px;
+            right: -50px;
+            animation-delay: 5s;
+        }
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: rgba(167, 139, 250, 0.15);
+            top: 50%;
+            left: 50%;
+            animation-delay: 3s;
+        }
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -20px) scale(1.1); }
+            50% { transform: translate(-20px, 30px) scale(0.9); }
+            75% { transform: translate(10px, -10px) scale(1.05); }
+        }
+
+        /* Particles */
+        .particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            z-index: 1;
+            pointer-events: none;
+            animation: particleUp linear infinite;
+        }
+        @keyframes particleUp {
+            0% { transform: translateY(100vh); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh); opacity: 0; }
+        }
+
+        /* Splash */
         #splash {
             position: fixed;
             top: 0;
@@ -61,13 +106,12 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            transition: opacity 0.5s;
         }
         #splash.hide { display: none; }
         .ghost-logo {
             width: 100px;
             height: 100px;
-            border-radius: 20px;
+            border-radius: 25px;
             background: linear-gradient(135deg, #8b5cf6, #7c3aed, #6d28d9);
             display: flex;
             align-items: center;
@@ -75,31 +119,72 @@
             font-size: 50px;
             font-weight: bold;
             margin-bottom: 20px;
-            animation: pulse 2s infinite;
+            position: relative;
+            animation: logoPulse 2s ease-in-out infinite;
         }
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.5); transform: scale(1); }
-            50% { box-shadow: 0 0 60px rgba(139, 92, 246, 0.9); transform: scale(1.05); }
+        .ghost-logo::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, #8b5cf6, transparent, #7c3aed);
+            z-index: -1;
+            animation: borderSpin 3s linear infinite;
+        }
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6); }
+            50% { box-shadow: 0 0 80px rgba(139, 92, 246, 1); }
+        }
+        @keyframes borderSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         .ghost-title {
-            font-size: 28px;
+            font-size: 30px;
             font-weight: bold;
-            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa, #8b5cf6);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 8px;
+            animation: gradientShift 3s ease infinite;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
         .ghost-sub {
             font-size: 13px;
-            color: #9ca3af;
-            animation: fadeInOut 3s infinite;
+            color: #a78bfa;
+            letter-spacing: 2px;
+            animation: fadeInOut 2s infinite;
         }
         @keyframes fadeInOut {
-            0%, 100% { opacity: 0.5; }
+            0%, 100% { opacity: 0.3; }
             50% { opacity: 1; }
         }
+        .loading-bar {
+            width: 150px;
+            height: 2px;
+            background: #1a1a2e;
+            border-radius: 2px;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+        .loading-bar::after {
+            content: '';
+            display: block;
+            width: 50%;
+            height: 100%;
+            background: #8b5cf6;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+        }
 
+        /* UI */
         .container { 
             max-width: 600px; 
             margin: 0 auto; 
@@ -112,134 +197,153 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 12px 20px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 15px;
             font-weight: bold;
             transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
         .btn-purple { 
             background: linear-gradient(135deg, #8b5cf6, #7c3aed); 
             color: white;
-            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
         }
-        .btn-purple:hover {
-            box-shadow: 0 4px 30px rgba(139, 92, 246, 0.6);
-            transform: translateY(-2px);
+        .btn-purple::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
         }
         .btn-green { background: #10b981; color: white; }
         .btn-ghost { 
             background: rgba(139, 92, 246, 0.1); 
-            border: 1px solid rgba(139, 92, 246, 0.3); 
+            border: 1px solid rgba(139, 92, 246, 0.4); 
             color: #a78bfa; 
             backdrop-filter: blur(10px);
         }
         .card { 
-            background: rgba(19, 19, 32, 0.8); 
+            background: rgba(19, 19, 32, 0.7); 
             border: 1px solid rgba(139, 92, 246, 0.3); 
-            border-radius: 12px; 
-            padding: 15px; 
-            margin-bottom: 10px;
-            backdrop-filter: blur(10px);
+            border-radius: 14px; 
+            padding: 20px; 
+            margin-bottom: 12px;
+            backdrop-filter: blur(20px);
             transition: all 0.3s;
         }
         .card:hover {
-            border-color: rgba(139, 92, 246, 0.6);
-            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.7);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.3);
         }
         .input {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: rgba(26, 26, 42, 0.8);
             border: 1px solid #8b5cf6;
-            border-radius: 8px;
+            border-radius: 10px;
             color: white;
             font-size: 15px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             transition: all 0.3s;
         }
         .input:focus {
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.4);
             border-color: #a78bfa;
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
         }
         .repo-item {
             width: 100%;
-            padding: 15px;
-            background: rgba(19, 19, 32, 0.8);
+            padding: 16px;
+            background: rgba(19, 19, 32, 0.7);
             border: 1px solid rgba(139, 92, 246, 0.2);
-            border-radius: 10px;
+            border-radius: 12px;
             color: white;
             text-align: left;
             font-size: 16px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             backdrop-filter: blur(10px);
             transition: all 0.3s;
         }
         .repo-item:hover { 
             border-color: #8b5cf6; 
-            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
-            transform: translateX(5px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+            transform: translateY(-3px);
         }
         .file-item {
             width: 100%;
             padding: 12px;
-            background: rgba(19, 19, 32, 0.6);
+            background: rgba(19, 19, 32, 0.5);
             border: 1px solid rgba(139, 92, 246, 0.15);
-            border-radius: 6px;
+            border-radius: 8px;
             color: #a78bfa;
             text-align: left;
             font-size: 13px;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-family: monospace;
             transition: all 0.2s;
         }
         .file-item:hover {
             border-color: #8b5cf6;
-            background: rgba(139, 92, 246, 0.1);
+            background: rgba(139, 92, 246, 0.15);
+            transform: translateX(5px);
         }
         .editor {
             width: 100%;
             height: 400px;
             background: rgba(19, 19, 32, 0.8);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 8px;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 10px;
             color: #e5e7eb;
             font-family: monospace;
             font-size: 14px;
-            padding: 12px;
-            margin-bottom: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
             resize: vertical;
         }
         .code-area {
             width: 100%;
             min-height: 150px;
             background: rgba(26, 26, 42, 0.8);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 8px;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 10px;
             color: white;
             font-size: 12px;
             font-family: monospace;
-            padding: 12px;
-            margin-bottom: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
             resize: vertical;
         }
         .toast {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 14px 20px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: bold;
             z-index: 3000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+            animation: toastIn 0.3s ease;
+        }
+        @keyframes toastIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         .toast-success { background: #10b981; color: white; }
         .toast-error { background: #ef4444; color: white; }
         .header {
-            background: rgba(19, 19, 32, 0.9);
-            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+            background: rgba(10, 10, 15, 0.9);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.4);
             padding: 15px;
             display: flex;
             align-items: center;
@@ -247,7 +351,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
         }
         .title {
             background: linear-gradient(135deg, #8b5cf6, #a78bfa);
@@ -260,33 +364,35 @@
     </style>
 </head>
 <body>
-    <div class="bg-animation" id="bgAnimation"></div>
+    <div class="grid-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
     <div id="splash">
         <div class="ghost-logo">G</div>
         <div class="ghost-title">GHOST IA</div>
-        <div class="ghost-sub">Seu código. Seu editor.</div>
+        <div class="ghost-sub">SEU CÓDIGO. SEU EDITOR.</div>
+        <div class="loading-bar"></div>
     </div>
+
     <div id="app"></div>
+
     <script>
-        // Create floating particles
-        function createParticles() {
-            const container = document.getElementById('bgAnimation');
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.width = Math.random() * 4 + 2 + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.animationDuration = Math.random() * 15 + 10 + 's';
-                particle.style.animationDelay = Math.random() * 10 + 's';
-                container.appendChild(particle);
-            }
+        // Create particles
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.animationDuration = (Math.random() * 10 + 8) + 's';
+            p.style.animationDelay = Math.random() * 10 + 's';
+            p.style.opacity = Math.random() * 0.5 + 0.2;
+            document.body.appendChild(p);
         }
-        createParticles();
 
         setTimeout(() => {
             document.getElementById('splash').classList.add('hide');
-        }, 2500);
+        }, 3000);
 
         let token = localStorage.getItem('ghost_token') || '';
         let repos = [];
@@ -303,12 +409,12 @@
 
         function showLogin() {
             document.getElementById('app').innerHTML = `
-                <div class="container" style="text-align:center;padding-top:40px;">
-                    <h1 class="title" style="font-size:32px;margin-bottom:10px;">GHOST IA</h1>
-                    <p style="color:#9ca3af;margin-bottom:30px;">Editor de código GitHub</p>
+                <div class="container" style="text-align:center;padding-top:30px;">
+                    <h1 class="title" style="font-size:34px;margin-bottom:10px;">GHOST IA</h1>
+                    <p style="color:#a78bfa;margin-bottom:30px;letter-spacing:1px;">EDITOR DE CÓDIGO</p>
                     <div class="card">
                         <input id="tokenInput" type="password" placeholder="ghp_..." value="${token}" class="input">
-                        <button onclick="connect()" class="btn btn-purple" style="width:100%;">Conectar GitHub</button>
+                        <button onclick="connect()" class="btn btn-purple" style="width:100%;">CONECTAR GITHUB</button>
                     </div>
                 </div>
             `;
@@ -321,10 +427,10 @@
             });
             if (res.ok) {
                 localStorage.setItem('ghost_token', token);
-                showToast('Conectado!', 'success');
+                showToast('CONECTADO!', 'success');
                 showRepos();
             } else {
-                showToast('Token inválido', 'error');
+                showToast('TOKEN INVÁLIDO', 'error');
             }
         }
 
@@ -336,10 +442,10 @@
             document.getElementById('app').innerHTML = `
                 <div class="header">
                     <span class="title">GHOST IA</span>
-                    <button onclick="logout()" class="btn btn-ghost" style="padding:8px 15px;font-size:13px;">Sair</button>
+                    <button onclick="logout()" class="btn btn-ghost" style="padding:8px 15px;font-size:13px;">SAIR</button>
                 </div>
                 <div class="container">
-                    <h2 style="color:white;margin-bottom:15px;">Repositórios (${repos.length})</h2>
+                    <h2 style="color:white;margin-bottom:15px;">REPOSITÓRIOS (${repos.length})</h2>
                     <div id="repoList"></div>
                 </div>
             `;
@@ -361,13 +467,13 @@
             document.getElementById('app').innerHTML = `
                 <div class="header">
                     <span class="title">GHOST IA</span>
-                    <button onclick="logout()" class="btn btn-ghost" style="padding:8px 15px;font-size:13px;">Sair</button>
+                    <button onclick="logout()" class="btn btn-ghost" style="padding:8px 15px;font-size:13px;">SAIR</button>
                 </div>
                 <div class="container">
-                    <button onclick="showRepos()" class="btn btn-ghost" style="margin-bottom:15px;">← Voltar</button>
+                    <button onclick="showRepos()" class="btn btn-ghost" style="margin-bottom:15px;">← VOLTAR</button>
                     <h2 style="color:white;margin-bottom:10px;">${fullName}</h2>
                     <button onclick="showApplyCode()" class="btn btn-green" style="width:100%;margin-bottom:15px;">APLICAR CÓDIGO</button>
-                    <h3 style="color:#a78bfa;font-size:14px;margin-bottom:10px;">Arquivos (${files.length})</h3>
+                    <h3 style="color:#a78bfa;font-size:14px;margin-bottom:10px;">ARQUIVOS (${files.length})</h3>
                     <div id="fileList"></div>
                 </div>
             `;
@@ -388,7 +494,7 @@
                     <button onclick="saveFile('${path}')" class="btn btn-green" style="padding:8px 15px;font-size:13px;">SALVAR</button>
                 </div>
                 <div class="container">
-                    <button onclick="openRepo('${selectedRepo.full_name}','${selectedRepo.default_branch}')" class="btn btn-ghost" style="margin-bottom:10px;">← Voltar</button>
+                    <button onclick="openRepo('${selectedRepo.full_name}','${selectedRepo.default_branch}')" class="btn btn-ghost" style="margin-bottom:10px;">← VOLTAR</button>
                     <h2 class="title" style="font-size:14px;margin-bottom:10px;">${path}</h2>
                     <textarea id="editor" class="editor">${content}</textarea>
                     <input id="commitMsg" type="text" value="update: ${path}" class="input">
@@ -407,18 +513,14 @@
             const updateRes = await fetch(`https://api.github.com/repos/${selectedRepo.full_name}/contents/${path}`, {
                 method: 'PUT',
                 headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: message,
-                    content: btoa(unescape(encodeURIComponent(content))),
-                    sha: sha
-                })
+                body: JSON.stringify({ message: message, content: btoa(unescape(encodeURIComponent(content))), sha: sha })
             });
             if (updateRes.ok) {
-                showToast('Arquivo salvo!', 'success');
+                showToast('ARQUIVO SALVO!', 'success');
                 openRepo(selectedRepo.full_name, selectedRepo.default_branch);
             } else {
                 const err = await updateRes.json();
-                showToast('Erro: ' + err.message, 'error');
+                showToast('ERRO: ' + err.message, 'error');
             }
         }
 
@@ -426,11 +528,11 @@
             document.getElementById('app').innerHTML = `
                 <div class="header">
                     <span class="title">GHOST IA</span>
-                    <button onclick="logout()" class="btn btn-ghost" style="padding:8px 15px;font-size:13px;">Sair</button>
+                    <button onclick="logout()" class="btn btn-ghost" style="padding:8px 15px;font-size:13px;">SAIR</button>
                 </div>
                 <div class="container">
-                    <button onclick="openRepo('${selectedRepo.full_name}','${selectedRepo.default_branch}')" class="btn btn-ghost" style="margin-bottom:15px;">← Voltar</button>
-                    <h2 class="title" style="margin-bottom:15px;">Aplicar Código</h2>
+                    <button onclick="openRepo('${selectedRepo.full_name}','${selectedRepo.default_branch}')" class="btn btn-ghost" style="margin-bottom:15px;">← VOLTAR</button>
+                    <h2 class="title" style="margin-bottom:15px;">APLICAR CÓDIGO</h2>
                     <textarea id="codeInput" class="code-area" placeholder='{"summary":"Mudar fundo","files":[{"path":"src/index.css","action":"modify","originalContent":"","newContent":"body { background: #8b5cf6; }"}]}'></textarea>
                     <button onclick="applyCode()" class="btn btn-green" style="width:100%;">APLICAR AGORA</button>
                 </div>
@@ -452,51 +554,38 @@
                         parsed = JSON.parse(cleaned);
                     }
                 }
-                
                 if (parsed && parsed.files && Array.isArray(parsed.files)) {
                     for (const file of parsed.files) {
                         const path = file.path;
                         const content = file.newContent || '';
-                        
                         const checkRes = await fetch(`https://api.github.com/repos/${selectedRepo.full_name}/contents/${path}`, {
                             headers: { 'Authorization': 'token ' + token }
                         });
-                        
                         let sha = null;
                         if (checkRes.ok) {
                             const fileData = await checkRes.json();
                             sha = fileData.sha;
                         }
-                        
-                        const body = {
-                            message: parsed.summary || 'update: ' + path,
-                            content: btoa(unescape(encodeURIComponent(content))),
-                            branch: selectedRepo.default_branch
-                        };
+                        const body = { message: parsed.summary || 'update: ' + path, content: btoa(unescape(encodeURIComponent(content))), branch: selectedRepo.default_branch };
                         if (sha) body.sha = sha;
-                        
                         const updateRes = await fetch(`https://api.github.com/repos/${selectedRepo.full_name}/contents/${path}`, {
                             method: 'PUT',
                             headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
                             body: JSON.stringify(body)
                         });
-                        
                         if (updateRes.ok) {
-                            showToast('✅ ' + path + ' criado/atualizado!', 'success');
+                            showToast('✅ ' + path + ' ATUALIZADO!', 'success');
                         } else {
                             const err = await updateRes.json();
                             showToast('❌ ' + path + ': ' + err.message, 'error');
                         }
                     }
-                    
-                    setTimeout(() => {
-                        openRepo(selectedRepo.full_name, selectedRepo.default_branch);
-                    }, 1500);
+                    setTimeout(() => { openRepo(selectedRepo.full_name, selectedRepo.default_branch); }, 1500);
                 } else {
-                    showToast('JSON inválido', 'error');
+                    showToast('JSON INVÁLIDO', 'error');
                 }
             } catch (err) {
-                showToast('Erro ao processar JSON', 'error');
+                showToast('ERRO AO PROCESSAR', 'error');
             }
         }
 
@@ -512,11 +601,7 @@
             });
         }
 
-        if (token) {
-            showRepos();
-        } else {
-            showLogin();
-        }
+        if (token) { showRepos(); } else { showLogin(); }
     </script>
 </body>
     </html>
