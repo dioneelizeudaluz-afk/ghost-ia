@@ -9,8 +9,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Ghost IA">
     <link rel="manifest" href="/manifest.webmanifest">
-    <link rel="icon" type="image/png" href="/icon.png">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" type="image/png" href="/file_000000003e7882118a0bd5b7aac2ae17.png">
+    <link rel="apple-touch-icon" href="/file_000000003e7882118a0bd5b7aac2ae17.png">
     <title>Ghost IA</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,7 +24,7 @@
             min-height: 100vh;
         }
         button { cursor: pointer; }
-        input, textarea, select { outline: none; }
+        input, textarea { outline: none; }
 
         .grid-bg {
             position: fixed;
@@ -94,14 +94,18 @@
             width: 100px;
             height: 100px;
             border-radius: 20px;
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 45px;
-            font-weight: bold;
             margin-bottom: 20px;
             animation: logoPulse 2s infinite;
+        }
+        .ghost-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
         }
         @keyframes logoPulse {
             0%, 100% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6); }
@@ -320,7 +324,9 @@
     <div class="orb orb-2"></div>
 
     <div id="splash">
-        <div class="ghost-logo">G</div>
+        <div class="ghost-logo">
+            <img src="/file_000000003e7882118a0bd5b7aac2ae17.png" alt="Ghost IA" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'font-size:45px;font-weight:bold;color:#8b5cf6;\'>G</div>';">
+        </div>
         <div class="ghost-title">GHOST IA</div>
         <div class="ghost-sub">SEU CÓDIGO. SEU EDITOR.</div>
         <div class="loading-bar"></div>
