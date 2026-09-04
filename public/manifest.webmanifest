@@ -11,13 +11,13 @@
   "lang": "pt-BR",
   "icons": [
     {
-      "src": "/SUA_IMAGEM.png",
+      "src": "/file_000000003e7882118a0bd5b7aac2ae17.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/SUA_IMAGEM.png",
+      "src": "/file_000000003e7882118a0bd5b7aac2ae17.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
